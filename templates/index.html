@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom QR Code Generator</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-qrcode"></i> Custom QR Code Generator</h1>
+            <p>Create beautiful, branded QR codes with custom logos and colors</p>
+        </header>
+
+        <div class="content">
+            <div class="form-section">
+                <form id="qrForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="url">
+                            <i class="fas fa-link"></i> URL
+                        </label>
+                        <input type="url" id="url" name="url"
+                               placeholder="https://example.com"
+                               value="https://digital.stanbicbank.co.zw/open-an-account/bluease-kyc-lite-account"
+                               required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="qr_color">
+                                <i class="fas fa-palette"></i> QR Code Color
+                            </label>
+                            <input type="color" id="qr_color" name="qr_color" value="#000000">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bg_color">
+                                <i class="fas fa-fill"></i> Background Color
+                            </label>
+                            <input type="color" id="bg_color" name="bg_color" value="#ffffff">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="add_logo" name="add_logo">
+                                <span class="checkmark"></span>
+                                Add Logo
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="logo-options" class="logo-section" style="display: none;">
+                        <div class="form-group">
+                            <label for="logo">
+                                <i class="fas fa-image"></i> Upload Logo
+                            </label>
+                            <div class="file-upload">
+                                <input type="file" id="logo" name="logo" accept="image/*">
+                                <div class="file-upload-text">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Choose logo image or drag & drop</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="logo_border" name="logo_border" checked>
+                                    <span class="checkmark"></span>
+                                    Add circular border around logo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="generate-btn">
+                        <i class="fas fa-magic"></i>
+                        Generate QR Code
+                    </button>
+                </form>
+            </div>
+
+            <div class="preview-section">
+                <div id="loading" class="loading" style="display: none;">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Generating your QR code...</p>
+                </div>
+
+                <div id="result" class="result" style="display: none;">
+                    <h3>Your QR Code is Ready!</h3>
+                    <img id="qr-image" src="" alt="Generated QR Code">
+                    <div class="result-actions">
+                        <a id="download-btn" href="" download class="download-btn">
+                            <i class="fas fa-download"></i>
+                            Download QR Code
+                        </a>
+                    </div>
+                </div>
+
+                <div id="error" class="error" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p id="error-message"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer with Credits -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>
+                    <i class="fas fa-code"></i>
+                    Crafted with ❤️ by
+                    <a href="https://theartfulprogrammer.com" target="_blank" rel="noopener noreferrer">
+                        <strong>artfulprogrammer <</strong>
+                    </a>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('add_logo').addEventListener('change', function() {
+            const logoOptions = document.getElementById('logo-options');
+            logoOptions.style.display = this.checked ? 'block' : 'none';
+        });
+
+        document.getElementById('qrForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const error = document.getElementById('error');
+
+            // Hide previous results
+            result.style.display = 'none';
+            error.style.display = 'none';
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/generate-qr', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                loading.style.display = 'none';
+
+                if (data.success) {
+                    document.getElementById('qr-image').src = `/static/generated/${data.filename}`;
+                    document.getElementById('download-btn').href = data.download_url;
+                    result.style.display = 'block';
+                } else {
+                    document.getElementById('error-message').textContent = data.error;
+                    error.style.display = 'block';
+                }
+            } catch (err) {
+                loading.style.display = 'none';
+                document.getElementById('error-message').textContent = 'An error occurred while generating the QR code.';
+                error.style.display = 'block';
+            }
+        });
+
+        // File upload styling
+        const fileInput = document.getElementById('logo');
+        const fileUpload = document.querySelector('.file-upload');
+
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                fileUpload.classList.add('has-file');
+                document.querySelector('.file-upload-text span').textContent = this.files[0].name;
+            }
+        });
+    </script>
+</body>
+</html>
