@@ -10,10 +10,10 @@ A sleek, modern web application for generating custom QR codes with logos, custo
 
 ## ✨ Features
 
-- 🎨 **Custom Colors**: Choose any color for QR code and background
-- 🖼️ **Logo Integration**: Upload and embed logos in the center of QR codes
-- 🎯 **High Error Correction**: Ensures QR codes work even with logos
-- 📱 **Responsive Design**: Works perfectly on desktop, tablet, and mobile
+- 🎨 **Custom Colors**: Choose any color for QR code and background.
+- 🖼️ **Logo Integration**: Upload and embed logos in the center of QR codes.
+- 🎯 **High Error Correction**: Ensures QR codes work even with logos.
+- 📱 **Responsive Design**: Works perfectly on desktop, tablet, and mobile.
 - ⚡ **Fast Generation**: Instant QR code creation.
 - 💾 **Easy Download**: One-click download of generated QR codes.
 - 🔧 **Customizable Border**: Optional circular border around logos.
